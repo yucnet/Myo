@@ -1,0 +1,264 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		61EFBA351A8BF34F00848B42 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61EFBA341A8BF34F00848B42 /* main.cpp */; };
+		61EFBA3D1A8BF3F900848B42 /* myo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61EFBA3C1A8BF3F900848B42 /* myo.framework */; };
+		61EFBA3E1A8BF41B00848B42 /* myo.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 61EFBA3C1A8BF3F900848B42 /* myo.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		61EFBA2F1A8BF34F00848B42 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				61EFBA3E1A8BF41B00848B42 /* myo.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		61EFBA311A8BF34F00848B42 /* MyoDataCollector */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MyoDataCollector; sourceTree = BUILT_PRODUCTS_DIR; };
+		61EFBA341A8BF34F00848B42 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; usesTabs = 1; };
+		61EFBA3C1A8BF3F900848B42 /* myo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = myo.framework; path = ../sdk/myo.framework; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		61EFBA2E1A8BF34F00848B42 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				61EFBA3D1A8BF3F900848B42 /* myo.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		61EFBA281A8BF34F00848B42 = {
+			isa = PBXGroup;
+			children = (
+				61EFBA3B1A8BF37F00848B42 /* Frameworks */,
+				61EFBA331A8BF34F00848B42 /* MyoDataCollector */,
+				61EFBA321A8BF34F00848B42 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		61EFBA321A8BF34F00848B42 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				61EFBA311A8BF34F00848B42 /* MyoDataCollector */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		61EFBA331A8BF34F00848B42 /* MyoDataCollector */ = {
+			isa = PBXGroup;
+			children = (
+				61EFBA341A8BF34F00848B42 /* main.cpp */,
+			);
+			path = MyoDataCollector;
+			sourceTree = "<group>";
+		};
+		61EFBA3B1A8BF37F00848B42 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				61EFBA3C1A8BF3F900848B42 /* myo.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		61EFBA301A8BF34F00848B42 /* MyoDataCollector */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 61EFBA381A8BF34F00848B42 /* Build configuration list for PBXNativeTarget "MyoDataCollector" */;
+			buildPhases = (
+				61EFBA2D1A8BF34F00848B42 /* Sources */,
+				61EFBA2E1A8BF34F00848B42 /* Frameworks */,
+				61EFBA2F1A8BF34F00848B42 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MyoDataCollector;
+			productName = MyoDataCollector;
+			productReference = 61EFBA311A8BF34F00848B42 /* MyoDataCollector */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		61EFBA291A8BF34F00848B42 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = "Ala Shaabana";
+				TargetAttributes = {
+					61EFBA301A8BF34F00848B42 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+				};
+			};
+			buildConfigurationList = 61EFBA2C1A8BF34F00848B42 /* Build configuration list for PBXProject "MyoDataCollector" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 61EFBA281A8BF34F00848B42;
+			productRefGroup = 61EFBA321A8BF34F00848B42 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				61EFBA301A8BF34F00848B42 /* MyoDataCollector */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		61EFBA2D1A8BF34F00848B42 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				61EFBA351A8BF34F00848B42 /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		61EFBA361A8BF34F00848B42 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		61EFBA371A8BF34F00848B42 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		61EFBA391A8BF34F00848B42 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/Ala/Development/Myo/sdk,
+				);
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		61EFBA3A1A8BF34F00848B42 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/Ala/Development/Myo/sdk,
+				);
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		61EFBA2C1A8BF34F00848B42 /* Build configuration list for PBXProject "MyoDataCollector" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				61EFBA361A8BF34F00848B42 /* Debug */,
+				61EFBA371A8BF34F00848B42 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		61EFBA381A8BF34F00848B42 /* Build configuration list for PBXNativeTarget "MyoDataCollector" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				61EFBA391A8BF34F00848B42 /* Debug */,
+				61EFBA3A1A8BF34F00848B42 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 61EFBA291A8BF34F00848B42 /* Project object */;
+}
