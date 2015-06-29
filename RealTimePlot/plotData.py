@@ -1,3 +1,7 @@
+## Ala Shaabana, WiSeR Lab
+## Python script to display 
+## accelerometer readings in real time coming from ONE Myo Armband
+
 import numpy
 from scipy.interpolate import interp1d
 from matplotlib import pyplot as plt
