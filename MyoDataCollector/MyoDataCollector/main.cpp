@@ -1,4 +1,4 @@
-// Copyright (C) 2013-2014 WiSeR lab
+// Copyright (C) 2013-2014 WiSeR lab, Ala Shaabana
 // Distributed under the Myo SDK license agreement. See LICENSE.txt for details.
 #define _USE_MATH_DEFINES
 #include <cmath>
