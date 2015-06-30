@@ -34,6 +34,14 @@ struct ArmBand {
 	// Raw values
 	float roll=0,pitch=0,yaw=0;
 	
+	// These values are set by onAccelerometerData()
+	// Raw accelerometer values
+	float xAccelRaw=0, yAccelRaw=0, zAccelRaw=0;
+	
+	// Values are set by onGyroscopeData()
+	// Raw Gyroscope values
+	float xGyroRaw=0, yGyroRaw=0, zGyroRaw=0;
+	
 	// This is set by onUnlocked() and onLocked() above.
 	bool isUnlocked=false;
 	
@@ -45,9 +53,12 @@ public:
     float roll, pitch, yaw;
 	
     // Data file values
-    std::string dataFileNameRight = "RightMyo.txt";
-    std::string dataFileNameLeft = "LeftMyo.txt";
-    std::ofstream dataFileRight, dataFileLeft;
+    std::string accelDataFileNameRight = "accelerometerRight_50hz.csv";
+    std::string accelDataFileNameLeft = "accelerometerLeft_50hz.csv";
+	std::string gyroDataFileNameRight = "gyroscopeRight_50hz.csv";
+	std::string gyroDataFileNameLeft = "gyroscopeLeft_50hz.csv";
+	
+    std::ofstream accelDataFileRight, accelDataFileLeft, gyroDataFileRight, gyroDataFileLeft;
     std::chrono::high_resolution_clock::time_point begin,end;
 
     
@@ -58,8 +69,15 @@ public:
 	
 	DataCollector(std::vector<ArmBand>& passedKnownMyos) : knownMyos(passedKnownMyos){
         knownMyos = passedKnownMyos;
-        dataFileRight.open(DataCollector::dataFileNameRight, std::ios::out | std::ios::trunc);
-        dataFileLeft.open(DataCollector::dataFileNameLeft, std::ios::out | std::ios::trunc);
+		
+		// Accelerometer data files
+		accelDataFileRight.open(DataCollector::accelDataFileNameRight, std::ios::out | std::ios::trunc);
+        accelDataFileLeft.open(DataCollector::accelDataFileNameLeft, std::ios::out | std::ios::trunc);
+		
+		// Gyroscope data files
+		gyroDataFileRight.open(DataCollector::gyroDataFileNameRight, std::ios::out | std::ios::trunc);
+		gyroDataFileLeft.open(DataCollector::gyroDataFileNameLeft, std::ios::out | std::ios::trunc);
+		
         begin = std::chrono::high_resolution_clock::now();
     }
 	
@@ -115,14 +133,8 @@ public:
         yaw = atan2(2.0f * (quat.w() * quat.z() + quat.x() * quat.y()),
                           1.0f - 2.0f * (quat.y() * quat.y() + quat.z() * quat.z()));
 		
-		knownMyos[identifyMyo(myo)].roll = roll;
-		knownMyos[identifyMyo(myo)].pitch = pitch;
-		knownMyos[identifyMyo(myo)].yaw = yaw;
-		
-        // Convert the floating point angles in radians to a scale from 0 to 18.
-        knownMyos[identifyMyo(myo)].roll_w = static_cast<int>((roll + (float)M_PI)/(M_PI * 2.0f) * 18);
-        knownMyos[identifyMyo(myo)].pitch_w = static_cast<int>((pitch + (float)M_PI/2.0f)/M_PI * 18);
-        knownMyos[identifyMyo(myo)].yaw_w = static_cast<int>((yaw + (float)M_PI)/(M_PI * 2.0f) * 18);
+		// For now, we will do nothing with these Euler angles as we do not need them, however we may use
+		// them later.
     }
     
     // onPose() is called whenever the Myo detects that the person wearing it has changed their pose, for example,
@@ -174,7 +186,7 @@ public:
         knownMyos[identifyMyo(myo)].isUnlocked = false;
     }
     
-    float accelMagnitude(int x, int y, int z){
+    float magnitude(float x, float y, float z){
         return sqrt((x*x) + (y*y) + (z*z));
     }
     
@@ -193,9 +205,25 @@ public:
     }
 
     
-    // There are other virtual functions in DeviceListener that we could override here, like onAccelerometerData().
-    // For this example, the functions overridden above are sufficient.
-    
+    // There are other virtual functions in DeviceListener that we could override here, like onAccelerometerData() & onGyroscopeData()
+	void onAccelerometerData(myo::Myo* myo, uint64_t timestamp, const myo::Vector3<float>& accel){
+		
+		// Simply write the raw values to the armband data struct, we will apply filters with
+		// the Python script that handles these values
+		knownMyos[identifyMyo(myo)].xAccelRaw = accel[0];
+		knownMyos[identifyMyo(myo)].yAccelRaw = accel[1];
+		knownMyos[identifyMyo(myo)].zAccelRaw = accel[2];
+	}
+	
+	void onGyroscopeData(myo::Myo* myo, uint64_t timestamp, const myo::Vector3<float>& gyro){
+		
+		// Simply write the raw values to the armband data struct, we will apply filters with
+		// the Python script that handles these values
+		knownMyos[identifyMyo(myo)].xGyroRaw = gyro[0];
+		knownMyos[identifyMyo(myo)].yGyroRaw = gyro[1];
+		knownMyos[identifyMyo(myo)].zGyroRaw = gyro[2];
+	}
+	
     // We define this function to print the current values that were updated by the on...() functions above.
     // This function also prints the x, y, and z (roll, pitch, and yaw, respectively) to a file.
     void print()
@@ -209,10 +237,21 @@ public:
 	
 			std::chrono::milliseconds ms = std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch());
 			
-            if(myoBand.whichArm == myo::armRight)
-                dataFileRight << ms.count() << "," << myoBand.roll << "," << myoBand.pitch << "," << myoBand.yaw << "," << (float)accelMagnitude(myoBand.roll, myoBand.pitch, myoBand.yaw) << std::endl;
-            else if(myoBand.whichArm == myo::armLeft)
-                dataFileLeft << ms.count() << "," << myoBand.roll << "," << myoBand.pitch << "," << myoBand.yaw << "," << (float)accelMagnitude(myoBand.roll, myoBand.pitch, myoBand.yaw) << std::endl;
+			std::string timestamp = std::to_string(ms.count());
+			
+			std::string accelOutput = timestamp + "," + std::to_string(myoBand.xAccelRaw) + "," + std::to_string(myoBand.yAccelRaw) + "," + std::to_string(myoBand.zAccelRaw) +
+				","	+ std::to_string((float)magnitude(myoBand.xAccelRaw, myoBand.yAccelRaw,	myoBand.zAccelRaw)) + "\n";
+			
+			std::string gyroOutput = timestamp + "," + std::to_string(myoBand.xGyroRaw) + "," + std::to_string(myoBand.yGyroRaw) + "," + std::to_string(myoBand.zGyroRaw) +
+				"," + std::to_string((float)magnitude(myoBand.xGyroRaw, myoBand.yGyroRaw, myoBand.zGyroRaw)) + "\n";
+			
+			if(myoBand.whichArm == myo::armRight){
+				accelDataFileRight << accelOutput;
+				gyroDataFileRight << gyroOutput;
+			} else if(myoBand.whichArm == myo::armLeft){
+				accelDataFileLeft << accelOutput;
+				gyroDataFileLeft << gyroOutput;
+			}
 			
             // Print out the orientation. Orientation data is always available, even if no arm is currently recognized.
             std::cout << '[' << std::string(myoBand.roll_w, '*') << std::string(18 - myoBand.roll_w, ' ') << ']'
