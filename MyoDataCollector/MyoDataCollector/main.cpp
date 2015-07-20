@@ -12,6 +12,7 @@
 #include <cmath>
 #include <cstdio>
 #include <chrono>
+#include <sstream>
 
 // The only file that needs to be included to use the Myo C++ SDK is myo.hpp.
 #include <myo/myo.hpp>
@@ -43,9 +44,17 @@ struct ArmBand {
 	// Raw Gyroscope values
 	float xGyroRaw=0, yGyroRaw=0, zGyroRaw=0;
 	
+	// Values are set by onEmgData()
+	// Raw emg data
+	int emg[8];
+	
 	// This is set by onUnlocked() and onLocked() above.
 	bool isUnlocked=false;
 	
+	
+	// Timestamp of last event
+	std::chrono::milliseconds accel_timestamp, gyro_timestamp, emgTimestamp;
+
 	myo::Pose currentPose;
 };
 
@@ -54,12 +63,14 @@ public:
     float roll, pitch, yaw;
 	
     // Data file values
-    std::string accelDataFileNameRight = "accelerometerRight_50hz.csv";
-    std::string accelDataFileNameLeft = "accelerometerLeft_50hz.csv";
-	std::string gyroDataFileNameRight = "gyroscopeRight_50hz.csv";
-	std::string gyroDataFileNameLeft = "gyroscopeLeft_50hz.csv";
+    std::string accelDataFileNameRight = "right forearm/accelerometer_50 Hz.csv";
+    std::string accelDataFileNameLeft = "left forearm/accelerometer_50 Hz.csv";
+	std::string gyroDataFileNameRight = "right forearm/gyroscope_50 Hz.csv";
+	std::string gyroDataFileNameLeft = "left forearm/gyroscope_50 Hz.csv";
+	std::string emgDataFileNameRight = "right forearm/emg.csv";
+	std::string emgDataFileNameLeft = "left forearm/emg.csv";
 	
-    std::ofstream accelDataFileRight, accelDataFileLeft, gyroDataFileRight, gyroDataFileLeft;
+    std::ofstream accelDataFileRight, accelDataFileLeft, gyroDataFileRight, gyroDataFileLeft, emgDataFileRight, emgDataFileLeft;
     std::chrono::high_resolution_clock::time_point begin,end;
 
     
@@ -79,6 +90,10 @@ public:
 		gyroDataFileRight.open(DataCollector::gyroDataFileNameRight, std::ios::out | std::ios::trunc);
 		gyroDataFileLeft.open(DataCollector::gyroDataFileNameLeft, std::ios::out | std::ios::trunc);
 		
+		// EMG data files
+		emgDataFileRight.open(DataCollector::emgDataFileNameRight, std::ios::out | std::ios::trunc);
+		emgDataFileLeft.open(DataCollector::emgDataFileNameLeft, std::ios::out | std::ios::trunc);
+		
         begin = std::chrono::high_resolution_clock::now();
     }
 	
@@ -95,6 +110,7 @@ public:
 		if(knownMyos.size() < 2){
 			ArmBand myoBand;
 			myoBand.myo = myo;
+			myo->setStreamEmg(myo::Myo::streamEmgEnabled);
 			knownMyos.push_back(myoBand);
 			
 			// Now that we've added it to our list, get our short ID for it and print it out.
@@ -114,6 +130,7 @@ public:
         knownMyos[identifyMyo(myo)].yaw_w = 0;
         knownMyos[identifyMyo(myo)].onArm = false;
         knownMyos[identifyMyo(myo)].isUnlocked = false;
+		
         
     }
     
@@ -214,6 +231,8 @@ public:
 		knownMyos[identifyMyo(myo)].xAccelRaw = accel[0];
 		knownMyos[identifyMyo(myo)].yAccelRaw = accel[1];
 		knownMyos[identifyMyo(myo)].zAccelRaw = accel[2];
+		knownMyos[identifyMyo(myo)].accel_timestamp = std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch());
+		print(knownMyos[identifyMyo(myo)]);
 	}
 	
 	void onGyroscopeData(myo::Myo* myo, uint64_t timestamp, const myo::Vector3<float>& gyro){
@@ -223,16 +242,25 @@ public:
 		knownMyos[identifyMyo(myo)].xGyroRaw = gyro[0];
 		knownMyos[identifyMyo(myo)].yGyroRaw = gyro[1];
 		knownMyos[identifyMyo(myo)].zGyroRaw = gyro[2];
+		knownMyos[identifyMyo(myo)].gyro_timestamp = std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch());
+		print(knownMyos[identifyMyo(myo)]);
+	}
+	
+	void onEmgData(myo::Myo* myo, uint64_t timestamp, const int8_t* emg){
+		knownMyos[identifyMyo(myo)].emgTimestamp = std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch());
+		for(size_t i = 0; i < 8; ++i){
+			knownMyos[identifyMyo(myo)].emg[i] = static_cast<int>(emg[i]);
+		}
 	}
 	
     // We define this function to print the current values that were updated by the on...() functions above.
     // This function also prints the x, y, and z (roll, pitch, and yaw, respectively) to a file.
-    void print()
+    void print(ArmBand myoBand)
     {
         for(size_t i = 0; i < knownMyos.size(); ++i){
             // Find Myo corresponding to this arm
-            ArmBand myoBand = knownMyos[i];
-        
+            myoBand = knownMyos[i];
+			
             // Clear the current line
             std::cout << '\r';
 	
@@ -240,25 +268,34 @@ public:
 			
 			std::string timestamp = std::to_string(ms.count());
 			
-			std::string accelOutput = timestamp + "," + std::to_string(myoBand.xAccelRaw) + "," + std::to_string(myoBand.yAccelRaw) + "," + std::to_string(myoBand.zAccelRaw) +
+			
+			std::string accelOutput = std::to_string(myoBand.accel_timestamp.count()) + "," + std::to_string(myoBand.xAccelRaw) + "," + std::to_string(myoBand.yAccelRaw) + "," + std::to_string(myoBand.zAccelRaw) +
 				","	+ std::to_string((float)magnitude(myoBand.xAccelRaw, myoBand.yAccelRaw,	myoBand.zAccelRaw)) + "\n";
 			
-			std::string gyroOutput = timestamp + "," + std::to_string(myoBand.xGyroRaw) + "," + std::to_string(myoBand.yGyroRaw) + "," + std::to_string(myoBand.zGyroRaw) +
+			std::string gyroOutput = std::to_string(myoBand.gyro_timestamp.count()) + "," + std::to_string(myoBand.xGyroRaw) + "," + std::to_string(myoBand.yGyroRaw) + "," + std::to_string(myoBand.zGyroRaw) +
 				"," + std::to_string((float)magnitude(myoBand.xGyroRaw, myoBand.yGyroRaw, myoBand.zGyroRaw)) + "\n";
+			
+			std::string emgOutput = std::to_string(myoBand.emgTimestamp.count());
+			for(size_t i = 0; i < 8; ++i){
+				emgOutput += "," + std::to_string(myoBand.emg[i]);
+			}
+			emgOutput += "\n";
 			
 			if(myoBand.whichArm == myo::armRight){
 				accelDataFileRight << accelOutput;
 				gyroDataFileRight << gyroOutput;
+				emgDataFileRight << emgOutput;
 			} else if(myoBand.whichArm == myo::armLeft){
 				accelDataFileLeft << accelOutput;
 				gyroDataFileLeft << gyroOutput;
+				emgDataFileLeft << emgOutput;
 			}
 			
             // Print out the orientation. Orientation data is always available, even if no arm is currently recognized.
-            std::cout << '[' << std::string(myoBand.roll_w, '*') << std::string(18 - myoBand.roll_w, ' ') << ']'
-            << '[' << std::string(myoBand.pitch_w, '*') << std::string(18 - myoBand.pitch_w, ' ') << ']'
-            << '[' << std::string(myoBand.yaw_w, '*') << std::string(18 - myoBand.yaw_w, ' ') << ']';
-        
+     /*       std::cout << '[' << std::string(myoBand.xAccelRaw, '*') << std::string(18 - myoBand.xAccelRaw, ' ') << ']'
+            << '[' << std::string(myoBand.yAccelRaw, '*') << std::string(18 - myoBand.yAccelRaw, ' ') << ']'
+            << '[' << std::string(myoBand.zAccelRaw, '*') << std::string(18 - myoBand.zAccelRaw, ' ') << ']';
+        */
             
             if (myoBand.onArm) {
                 // Print out the lock state, the currently recognized pose, and which arm Myo is being worn on.
@@ -295,33 +332,6 @@ int main(int argc, char** argv)
         myo::Hub hub("com.example.hello-myo");
         
         std::cout << "Attempting to find a Myo..." << std::endl;
-        
-        // Next, we attempt to find a Myo to use. If a Myo is already paired in Myo Connect, this will return that Myo
-        // immediately.
-        // waitForMyo() takes a timeout value in milliseconds. In this case we will try to find a Myo for 10 seconds, and
-        // if that fails, the function will return a null pointer.
- //       myo::Myo* myo1 = hub.waitForMyo(10000);
-        
-        // If waitForMyo() returned a null pointer, we failed to find a Myo, so exit with an error message.
-/*        if (!myo1) {
-            throw std::runtime_error("Unable to find the first Myo!");
-        } else {
-			std::cout << "Found first Myo!" << std::endl;
-            ArmBand armband;
-            armband.myo = myo1;
-            knownMyos.push_back(armband);
-        }
-		
-        
-        myo::Myo* myo2 = hub.waitForMyo(10000);
-        if(!myo2){
-            std::cout << "Proceeding without second Myo" << std::endl;
-        } else {
-			std::cout << "Found second Myo!" << std::endl;
-			ArmBand armband;
-			armband.myo = myo2;
-			knownMyos.push_back(armband);
-        }*/
 		
         // Next we construct an instance of our DeviceListener, so that we can register it with the Hub.
 		DataCollector collector(knownMyos);
@@ -337,7 +347,7 @@ int main(int argc, char** argv)
             hub.run(20);
             // After processing events, we call the print() member function we defined above to print out the values we've
             // obtained from any events that have occurred.
-            collector.print();
+        //    collector.print();
         }
         
         // If a standard exception occurred, we print out its message and exit.
